@@ -1,5 +1,6 @@
 #include "calc.h"
 #include <iostream>
+#include <math.h>
 
 double calculate(Operation op, double a, double b, Error& error)
 {
@@ -13,7 +14,7 @@ double calculate(Operation op, double a, double b, Error& error)
         case Operation::MUL:
             return a * b;
         case Operation::DIV:
-            if (b == 0.0)
+            if (abs(b) < 1e-7)
             {
                 error = Error::INVALID_ARGUMENT;
                 return 0.0;
