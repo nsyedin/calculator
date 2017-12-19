@@ -5,6 +5,7 @@
 
 enum class Operation : int
 {
+    NONE,
     ADD,
     SUB,
     MUL,
@@ -13,8 +14,8 @@ enum class Operation : int
 
 enum class Error : int
 {
-    NO_ERROR,
-    INVALID_ARGUMENT,
+    NONE,
+    DIVISION_BY_ZERO,
     INVALID_OPERATION
 };
 

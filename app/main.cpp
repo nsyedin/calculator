@@ -1,7 +1,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include "calc.h"
+#include <QQmlContext>
 #include <iostream>
+#include "requestthread.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,12 +10,12 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    Error error = Error::NO_ERROR;
-    std::cout << calculate(Operation::ADD, 1, 2, error) << std::endl;
-
     QGuiApplication app(argc, argv);
 
+    RequestThread requestThread;
+
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("requestThread", &requestThread);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

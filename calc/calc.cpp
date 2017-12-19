@@ -16,12 +16,13 @@ double calculate(Operation op, double a, double b, Error& error)
         case Operation::DIV:
             if (abs(b) < 1e-7)
             {
-                error = Error::INVALID_ARGUMENT;
+                error = Error::DIVISION_BY_ZERO;
                 return 0.0;
             }
             return a / b;
+        default:
+            error = Error::INVALID_OPERATION;
     }
 
-    error = Error::INVALID_OPERATION;
     return 0.0;
 }
