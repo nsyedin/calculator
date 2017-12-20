@@ -9,43 +9,54 @@
 #include <list>
 #include "calc.h"
 
+class ResultThread;
+
 class RequestThread : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int queueSize READ queueSize NOTIFY queueSizeChanged)
-    Q_PROPERTY(int timeout WRITE setTimeout NOTIFY timeoutChanged)
+    Q_PROPERTY(int timeout READ timeout WRITE setTimeout NOTIFY timeoutChanged)
+
+    typedef std::unique_lock<std::mutex> Lock;
 
 public:
     typedef std::function<double(Error&)> CalcFunc;
-    typedef std::unique_lock<std::mutex> Lock;
 
-    explicit RequestThread(QObject *parent = nullptr);
+    explicit RequestThread(ResultThread *pResultThread, QObject *parent = nullptr);
     ~RequestThread();
 
     Q_INVOKABLE void start();
     Q_INVOKABLE void stop();
 
-    void add(QString operation, QString a, QString b);
+    Q_INVOKABLE void add(QString operation, QString a, QString b);
 
     int queueSize() const
     {
         return m_queueSize;
     }
 
+    int timeout() const
+    {
+        return m_timeout;
+    }
+
 public slots:
     void setTimeout(int timeout)
-    {
+    {   
         if (m_timeout == timeout)
             return;
 
-        m_timeout = timeout;
+        {
+            Lock lock(m_mutex);
+            m_timeout = timeout;
+        }
+
         emit timeoutChanged(m_timeout);
     }
 
 signals:
-
-void queueSizeChanged(int queueSize);
-void timeoutChanged(int timeout);
+    void queueSizeChanged(int queueSize);
+    void timeoutChanged(int timeout);
 
 private:
     std::thread m_thread;
@@ -58,6 +69,7 @@ private:
     int m_queueSize;
 
     int m_timeout;
+    ResultThread *m_pResultThread;
 };
 
 #endif // REQUESTTHREAD_H
