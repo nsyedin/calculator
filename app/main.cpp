@@ -13,10 +13,15 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    ResultThread resultThread;
-    RequestThread requestThread(&resultThread);
+    ThreadSafeQueue<QString> requests;
+    ThreadSafeQueue<double> results;
+
+    RequestThread requestThread(requests, results);
+    ResultThread resultThread(results);
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("requests", &requests);
+    engine.rootContext()->setContextProperty("results", &results);
     engine.rootContext()->setContextProperty("requestThread", &requestThread);
     engine.rootContext()->setContextProperty("resultThread", &resultThread);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

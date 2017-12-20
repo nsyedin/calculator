@@ -8,7 +8,7 @@ Window {
     id: window
     visible: true
     width: 400
-    height: 500
+    height: 300
     minimumHeight: height
     maximumHeight: height
     minimumWidth: width
@@ -42,7 +42,7 @@ Window {
             height: 20
             Text {
                 anchors.left: parent.left
-                text: requestThread.queueSize
+                text: requests.size
             }
         }
 
@@ -61,7 +61,7 @@ Window {
             height: 20
             Text {
                 anchors.left: parent.left
-                text: resultThread.queueSize
+                text: results.size
             }
         }
 

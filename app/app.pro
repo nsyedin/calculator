@@ -17,7 +17,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
     requestthread.cpp \
-    resultthread.cpp
+    resultthread.cpp \
+    threadsafequeue.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,4 +35,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     requestthread.h \
-    resultthread.h
+    resultthread.h \
+    threadsafequeue.h
