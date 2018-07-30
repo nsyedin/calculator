@@ -3,12 +3,15 @@
 #include <chrono>
 #include "calc.h"
 
-RequestThread::RequestThread(ResultThread *pResultThread, QObject *parent)
-: QObject(parent),
-  m_isDone(false),
-  m_timeout(0)
+RequestThread::RequestThread(ThreadSafeQueue<QString>& requests,
+                       ThreadSafeQueue<double>& results,
+                       QObject *parent)
+    : QObject(parent),
+      m_isDone(false),
+      m_timeout(0),
+      m_requests(requests),
+      m_results(results)
 {
-
 }
 
 RequestThread::~RequestThread()
@@ -26,19 +29,38 @@ void RequestThread::start()
             QString expr = m_requests.pop();
             int index = 0;
             char c;
-            for (QChar op : { "+", "-", "*", "/" })
+            for (char cc : { '+', '-', '*', '/' })
             {
-                index = expr.indexOf(op);
+                index = expr.indexOf(QChar(cc));
                 if (index != -1)
                 {
-                    c = op.toLatin1();
+                    c = cc;
                     break;
                 }
             }
 
+            Operation op = Operation::NONE;
+            switch (c)
+            {
+                case '+':
+                    op = Operation::ADD;
+                    break;
+                case '-':
+                    op = Operation::SUB;
+                    break;
+                case '*':
+                    op = Operation::MUL;
+                    break;
+                case '/':
+                    op = Operation::DIV;
+                    break;
+            }
+
             double arg1 = expr.left(index).toDouble();
             double arg2 = expr.right(expr.size() - index).toDouble();
-            double result = calculate(op, arg1, arg2);
+
+            static Error error = Error::NONE;
+            double result = calculate(op, arg1, arg2, error);
 
             std::cout << "Got request: " << expr.toStdString();
 

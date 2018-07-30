@@ -1,7 +1,7 @@
 #include "resultthread.h"
 #include <iostream>
 
-ResultThread::ResultThread(ThreadSafeQueue& results, QObject *parent)
+ResultThread::ResultThread(ThreadSafeQueue<double>& results, QObject *parent)
     : QObject(parent),
       m_isDone(false),
       m_results(results)

@@ -1,36 +1,41 @@
 #ifndef THREADSAFEQUEUE_H
 #define THREADSAFEQUEUE_H
 
-#include <QObject>
 #include <queue>
 #include <mutex>
 #include <condition_variable>
 
-template<type T>
-class ThreadSafeQueue : public QObject
+template <typename T>
+class ThreadSafeQueue
 {
-    typedef std::unique_lock<std::mutex> Lock;
-
-    Q_OBJECT
-    Q_PROPERTY(int size READ size NOTIFY sizeChanged)
-
+    using Lock = std::unique_lock<std::mutex>;
 public:
-    explicit ThreadSafeQueue(QObject *parent = nullptr);
+    ThreadSafeQueue() = default;
 
     int size() const
     {
-        return m_size;
+        Lock lock(m_mutex);
+        return m_queue.size();
     }
 
-    Q_INVOKABLE push(const T& t);
-    T pop();
+    void push(const T& t)
+    {
+        Lock lock(m_mutex);
+        m_queue.push(t);
+        m_condVar.notify_one();
+    }
 
-signals:
-    void sizeChanged(int size);
+    T pop()
+    {
+        Lock lock(m_mutex);
+        m_condVar.wait(lock, [this]() { return m_queue.empty(); });
+        T t = m_queue.front();
+        m_queue.pop();
+        return t;
+    }
 
 private:
-    int m_size;
-    std::queue m_queue;
+    std::queue<T> m_queue;
     std::mutex m_mutex;
     std::condition_variable m_condVar;
 };
