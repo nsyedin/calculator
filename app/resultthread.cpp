@@ -6,6 +6,7 @@ ResultThread::ResultThread(ThreadSafeQueue<double>& results, QObject *parent)
       m_isDone(false),
       m_results(results)
 {
+    m_results.setSizeChangedListener(this);
 }
 
 ResultThread::~ResultThread()

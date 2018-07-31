@@ -12,6 +12,7 @@ RequestThread::RequestThread(ThreadSafeQueue<QString>& requests,
       m_requests(requests),
       m_results(results)
 {
+    m_requests.setSizeChangedListener(this);
 }
 
 RequestThread::~RequestThread()

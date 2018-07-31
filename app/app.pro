@@ -17,8 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
     requestthread.cpp \
-    resultthread.cpp \
-    threadsafequeue.cpp
+    resultthread.cpp
 
 RESOURCES += qml.qrc
 
